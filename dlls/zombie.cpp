@@ -154,10 +154,6 @@ int CZombie :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, floa
 		flDamage *= 0.3;
 	}
 
-	// HACK
-	if ( !IsAlive() )
-		HANDLE_KILL_COUNTER_KILL();
-
 	// HACK HACK -- until we fix this.
 	if ( IsAlive() )
 		PainSound();
