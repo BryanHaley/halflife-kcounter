@@ -22,6 +22,7 @@
 #include "cbase.h"
 #include "monsters.h"
 #include "saverestore.h"
+#include "killcounter.h"
 
 // Monstermaker spawnflags
 #define	SF_MONSTERMAKER_START_ON	1 // start active ( if has targetname )
@@ -54,6 +55,7 @@ public:
 
 	
 	int  m_cLiveChildren;// how many monsters made by this monster maker that are currently alive
+	int  m_iTotalChildren; // Count all children created
 	int	 m_iMaxLiveChildren;// max number of monsters that this maker may have out at one time.
 
 	float m_flGround; // z coord of the ground under me, used to make sure no monsters are under the maker when it drops a new child
@@ -69,6 +71,7 @@ TYPEDESCRIPTION	CMonsterMaker::m_SaveData[] =
 	DEFINE_FIELD( CMonsterMaker, m_iszMonsterClassname, FIELD_STRING ),
 	DEFINE_FIELD( CMonsterMaker, m_cNumMonsters, FIELD_INTEGER ),
 	DEFINE_FIELD( CMonsterMaker, m_cLiveChildren, FIELD_INTEGER ),
+	DEFINE_FIELD( CMonsterMaker, m_iTotalChildren, FIELD_INTEGER ),
 	DEFINE_FIELD( CMonsterMaker, m_flGround, FIELD_FLOAT ),
 	DEFINE_FIELD( CMonsterMaker, m_iMaxLiveChildren, FIELD_INTEGER ),
 	DEFINE_FIELD( CMonsterMaker, m_fActive, FIELD_BOOLEAN ),
@@ -106,6 +109,7 @@ void CMonsterMaker :: Spawn( )
 	pev->solid = SOLID_NOT;
 
 	m_cLiveChildren = 0;
+	m_iTotalChildren = 0;
 	Precache();
 	if ( !FStringNull ( pev->targetname ) )
 	{
@@ -224,7 +228,20 @@ void CMonsterMaker::MakeMonster( void )
 	}
 
 	m_cLiveChildren++;// count this monster
+	m_iTotalChildren++;
 	m_cNumMonsters--;
+
+	// If this monster maker has made more than one monster, its children won't be counted towards the kill counter
+	if (m_iTotalChildren > 1) {
+		if ((CVAR_GET_FLOAT( "kc_ghosts" ) != 0)) {
+			pevCreate->rendermode = kRenderTransAdd;
+			pevCreate->renderamt = 128;
+		}	
+		CBaseEntity *pEntity = CBaseEntity::Instance(pent);
+		if (pEntity) {
+			pEntity->MarkKillCounterInellgible();
+		}
+	}
 
 	if ( m_cNumMonsters == 0 )
 	{

@@ -37,6 +37,7 @@
 #include "weaponinfo.h"
 #include "usercmd.h"
 #include "netadr.h"
+#include "killcounter.h"
 
 extern DLL_GLOBAL ULONG		g_ulModelIndexPlayer;
 extern DLL_GLOBAL BOOL		g_fGameOver;
@@ -368,6 +369,17 @@ void ClientCommand( edict_t *pEntity )
 	else if ( FStrEq(pcmd, "use" ) )
 	{
 		GetClassPtr((CBasePlayer *)pev)->SelectItem((char *)CMD_ARGV(1));
+	}
+	else if ( FStrEq(pcmd, "reset_kills" ) || FStrEq(pcmd, "kc_reset_kills" ) )
+	{
+		KillCounter.ResetKills();
+	}
+	else if ( FStrEq(pcmd, "kc_set_kills" ) )
+	{
+		if ( g_flWeaponCheat && CMD_ARGC() > 1)
+		{
+			KillCounter.SetKills(atoi( CMD_ARGV(1) ));
+		}
 	}
 	else if (((pstr = strstr(pcmd, "weapon_")) != NULL)  && (pstr == pcmd))
 	{

@@ -30,6 +30,7 @@
 #include	"decals.h"
 #include	"explode.h"
 #include	"func_break.h"
+#include    "killcounter.h"
 
 //=========================================================
 // Gargantua Monster
@@ -770,6 +771,8 @@ void CGargantua :: Spawn()
 	EyeOff();
 	m_seeTime = gpGlobals->time + 5;
 	m_flameTime = gpGlobals->time + 2;
+
+	m_iKillCounterEligble = 1; // Make eligble for kill counter
 }
 
 
@@ -906,6 +909,7 @@ void CGargantua::DeathEffect( void )
 
 void CGargantua::Killed( entvars_t *pevAttacker, int iGib )
 {
+	HANDLE_KILL_COUNTER_KILL();
 	EyeOff();
 	UTIL_Remove( m_pEyeGlow );
 	m_pEyeGlow = NULL;

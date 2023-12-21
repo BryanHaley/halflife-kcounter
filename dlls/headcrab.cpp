@@ -21,6 +21,7 @@
 #include	"cbase.h"
 #include	"monsters.h"
 #include	"schedule.h"
+#include    "killcounter.h"
 
 
 //=========================================================
@@ -87,6 +88,7 @@ public:
 	void AlertSound( void );
 	void PrescheduleThink( void );
 	int  Classify ( void );
+	void Killed( entvars_t *pevAttacker, int iGib );
 	void HandleAnimEvent( MonsterEvent_t *pEvent );
 	BOOL CheckRangeAttack1 ( float flDot, float flDist );
 	BOOL CheckRangeAttack2 ( float flDot, float flDist );
@@ -207,6 +209,12 @@ void CHeadCrab :: SetYawSpeed ( void )
 	pev->yaw_speed = ys;
 }
 
+void CHeadCrab :: Killed( entvars_t *pevAttacker, int iGib )
+{
+	HANDLE_KILL_COUNTER_KILL();
+	CBaseMonster :: Killed ( pevAttacker, iGib );
+}
+
 //=========================================================
 // HandleAnimEvent - catches the monster-specific messages
 // that occur when tagged animation frames are played.
@@ -293,6 +301,8 @@ void CHeadCrab :: Spawn()
 	m_MonsterState		= MONSTERSTATE_NONE;
 
 	MonsterInit();
+
+	m_iKillCounterEligble = 1; // Make eligble for kill counter
 }
 
 //=========================================================
@@ -487,6 +497,7 @@ public:
 	void Spawn( void );
 	void Precache( void );
 	void SetYawSpeed ( void );
+	void Killed( entvars_t *pevAttacker, int iGib );
 	float GetDamageAmount( void ) { return gSkillData.headcrabDmgBite * 0.3; }
 	BOOL CheckRangeAttack1 ( float flDot, float flDist );
 	Schedule_t* GetScheduleOfType ( int Type );
@@ -504,6 +515,8 @@ void CBabyCrab :: Spawn( void )
 	UTIL_SetSize(pev, Vector(-12, -12, 0), Vector(12, 12, 24));
 	
 	pev->health	= gSkillData.headcrabHealth * 0.25;	// less health than full grown
+
+	m_iKillCounterEligble = 0; // Don't count baby crabs
 }
 
 void CBabyCrab :: Precache( void )
@@ -552,4 +565,10 @@ Schedule_t* CBabyCrab :: GetScheduleOfType ( int Type )
 	}
 
 	return CHeadCrab::GetScheduleOfType( Type );
+}
+
+void CBabyCrab :: Killed( entvars_t *pevAttacker, int iGib )
+{
+	// HANDLE_KILL_COUNTER_KILL(); // Don't count baby crabs
+	CBaseMonster :: Killed ( pevAttacker, iGib );
 }

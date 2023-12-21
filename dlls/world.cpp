@@ -554,6 +554,8 @@ void CWorld :: Precache( void )
 	PRECACHE_SOUND ("weapons/ric3.wav");
 	PRECACHE_SOUND ("weapons/ric4.wav");
 	PRECACHE_SOUND ("weapons/ric5.wav");
+
+	PRECACHE_SOUND ("kc/hitmarker.wav");
 //
 // Setup light animation tables. 'a' is total darkness, 'z' is maxbright.
 //

@@ -147,6 +147,25 @@ public:
 	int			m_iClientHideHUD;
 	int			m_iFOV;			// field of view
 	int			m_iClientFOV;	// client's known FOV
+
+	int         m_iKillCounter;
+	int 		m_iKillCounter_UC;
+	int 		m_iKillCounter_OC;
+	int 		m_iKillCounter_WGH;
+	int 		m_iKillCounter_BP;
+	int 		m_iKillCounter_PU;
+	int 		m_iKillCounter_OAR;
+	int 		m_iKillCounter_APP;
+	int 		m_iKillCounter_RP;
+	int 		m_iKillCounter_QE;
+	int 		m_iKillCounter_ST;
+	int 		m_iKillCounter_FAF;
+	int 		m_iKillCounter_LC;
+	int 		m_iKillCounter_XEN;
+	int 		m_iKillCounter_GL;
+	int 		m_iKillCounter_INT;
+	int 		m_iKillCounter_END;
+
 	// usable player items 
 	CBasePlayerItem	*m_rgpPlayerItems[MAX_ITEM_TYPES];
 	CBasePlayerItem *m_pActiveItem;
@@ -199,6 +218,9 @@ public:
 	void PackDeadPlayerItems( void );
 	void RemoveAllItems( BOOL removeSuit );
 	BOOL SwitchWeapon( CBasePlayerItem *pWeapon );
+
+	void GetKillCounterKills( void );
+	void SetKillCounterKills( void );
 
 	// JOHN:  sends custom messages if player HUD data has changed  (eg health, ammo)
 	virtual void UpdateClientData( void );

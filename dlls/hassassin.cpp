@@ -26,6 +26,7 @@
 #include	"squadmonster.h"
 #include	"weapons.h"
 #include	"soundent.h"
+#include    "killcounter.h"
 
 extern DLL_GLOBAL int  g_iSkillLevel;
 
@@ -81,6 +82,7 @@ public:
 	void RunTask ( Task_t *pTask );
 	void DeathSound ( void );
 	void IdleSound ( void );
+	void Killed( entvars_t *pevAttacker, int iGib );
 	CUSTOM_SCHEDULES;
 
 	int	Save( CSave &save ); 
@@ -124,12 +126,19 @@ TYPEDESCRIPTION	CHAssassin::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE( CHAssassin, CBaseMonster );
 
+void CHAssassin :: Killed( entvars_t *pevAttacker, int iGib )
+{
+	HANDLE_KILL_COUNTER_KILL();
+	CBaseMonster :: Killed ( pevAttacker, iGib );
+}
+
 
 //=========================================================
 // DieSound
 //=========================================================
 void CHAssassin :: DeathSound ( void )
 {
+	HANDLE_KILL_COUNTER_KILL();
 }
 
 //=========================================================
@@ -300,6 +309,8 @@ void CHAssassin :: Spawn()
 	pev->rendermode		= kRenderTransTexture;
 
 	MonsterInit();
+
+	m_iKillCounterEligble = 1; // Make eligble for kill counter
 }
 
 //=========================================================

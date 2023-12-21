@@ -28,6 +28,8 @@
 #include	"weapons.h"
 #include	"soundent.h"
 
+#include "killcounter.h"
+
 //=========================================================
 // Monster's Anim Events Go Here
 //=========================================================
@@ -425,6 +427,10 @@ void CBarney :: Spawn()
 
 	MonsterInit();
 	SetUse( FollowerUse );
+
+	if (CVAR_GET_FLOAT( "kc_count_friendlies" ) != 0) {
+		m_iKillCounterEligble = 1; // Make eligble for kill counter
+	}
 }
 
 //=========================================================
@@ -576,6 +582,7 @@ void CBarney :: DeathSound ( void )
 	case 1: EMIT_SOUND_DYN( ENT(pev), CHAN_VOICE, "barney/ba_die2.wav", 1, ATTN_NORM, 0, GetVoicePitch()); break;
 	case 2: EMIT_SOUND_DYN( ENT(pev), CHAN_VOICE, "barney/ba_die3.wav", 1, ATTN_NORM, 0, GetVoicePitch()); break;
 	}
+	HANDLE_KILL_COUNTER_KILL();
 }
 
 
@@ -625,6 +632,8 @@ void CBarney::Killed( entvars_t *pevAttacker, int iGib )
 
 	SetUse( NULL );	
 	CTalkMonster::Killed( pevAttacker, iGib );
+
+	HANDLE_KILL_COUNTER_KILL();
 }
 
 //=========================================================

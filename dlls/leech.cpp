@@ -40,6 +40,7 @@
 #include	"util.h"
 #include	"cbase.h"
 #include	"monsters.h"
+#include	"killcounter.h"
 
 
 
@@ -206,6 +207,12 @@ void CLeech::Spawn( void )
 	SetActivity( ACT_SWIM );
 	SetState( MONSTERSTATE_IDLE );
 	m_stateTime = gpGlobals->time + RANDOM_FLOAT( 1, 5 );
+
+	// Should always be ghost
+	if ((CVAR_GET_FLOAT( "kc_ghosts" ) != 0)) {
+		pev->rendermode = kRenderTransAdd;
+		pev->renderamt = 128;
+	}
 }
 
 

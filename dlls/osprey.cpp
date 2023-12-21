@@ -21,6 +21,7 @@
 #include "soundent.h"
 #include "effects.h"
 #include "customentity.h"
+#include "killcounter.h"
 
 typedef struct 
 {
@@ -178,6 +179,8 @@ void COsprey :: Spawn( void )
 	m_pos2 = pev->origin;
 	m_ang2 = pev->angles;
 	m_vel2 = pev->velocity;
+
+	m_iKillCounterEligble = 1;
 }
 
 
@@ -299,9 +302,14 @@ CBaseMonster *COsprey :: MakeGrunt( Vector vecSrc )
 				m_hGrunt[i]->SUB_StartFadeOut( );
 			}
 			pEntity = Create( "monster_human_grunt", vecSrc, pev->angles );
+			pEntity->MarkKillCounterInellgible();
 			pGrunt = pEntity->MyMonsterPointer( );
 			pGrunt->pev->movetype = MOVETYPE_FLY;
 			pGrunt->pev->velocity = Vector( 0, 0, RANDOM_FLOAT( -196, -128 ) );
+			if ((CVAR_GET_FLOAT( "kc_ghosts" ) != 0)) {
+				pGrunt->pev->rendermode = kRenderTransAdd;
+				pGrunt->pev->renderamt = 128;
+			}
 			pGrunt->SetActivity( ACT_GLIDE );
 
 			CBeam *pBeam = CBeam::BeamCreate( "sprites/rope.spr", 10 );
@@ -511,6 +519,7 @@ int COsprey::TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float 
 
 void COsprey :: Killed( entvars_t *pevAttacker, int iGib )
 {
+	HANDLE_KILL_COUNTER_KILL();
 	pev->movetype = MOVETYPE_TOSS;
 	pev->gravity = 0.3;
 	pev->velocity = m_velocity;

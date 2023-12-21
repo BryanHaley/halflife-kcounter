@@ -26,6 +26,7 @@
 #include "saverestore.h"
 #include "nodes.h"
 #include "doors.h"
+#include "killcounter.h"
 
 extern CGraph WorldGraph;
 
@@ -264,6 +265,80 @@ void CBaseDelay :: SUB_UseTargets( CBaseEntity *pActivator, USE_TYPE useType, fl
 		edict_t *pentKillTarget = NULL;
 
 		ALERT( at_aiconsole, "KillTarget: %s\n", STRING(m_iszKillTarget) );
+
+		// HACK HACK HACK
+		if (strcmp(STRING(gpGlobals->mapname), "c4a2b") == 0 && strcmp(STRING(m_iszKillTarget), "big_momma") == 0)
+		{
+			// Gonarch
+			CBaseEntity *pPlayer = UTIL_FindEntityByClassname( NULL, "player" );
+			if ((CVAR_GET_FLOAT( "kc_hit_marker" ) != 0)) {
+				EMIT_SOUND( pPlayer->edict(), CHAN_AUTO, "kc/hitmarker.wav", 1.0f, ATTN_NONE );
+			}
+			KillCounter.IncrementKills(STRING(gpGlobals->mapname));
+			char num_kills[16];
+			itoa(KillCounter.GetKills(), num_kills, 10);
+			char report[128];
+			report[0] = '\0';
+			strcat(report, "report_to_demo monster_bigmomma 'big_momma' killedon c4a2b total ");
+			strcat(report, num_kills);
+			strcat(report, "\n");
+			ALERT( at_console, report );
+			CLIENT_COMMAND ( pPlayer->edict(), report);
+		}
+		else if (strcmp(STRING(gpGlobals->mapname), "c1a4i") == 0 && strcmp(STRING(m_iszKillTarget), "pit_wall") == 0)
+		{
+			// Blast Pit Tentacles
+			CBaseEntity *pPlayer = UTIL_FindEntityByClassname( NULL, "player" );
+			if ((CVAR_GET_FLOAT( "kc_hit_marker" ) != 0)) {
+				EMIT_SOUND( pPlayer->edict(), CHAN_AUTO, "kc/hitmarker.wav", 1.0f, ATTN_NONE );
+			}
+			char num_kills[16];
+			itoa(KillCounter.GetKills(), num_kills, 10);
+			char report[128];
+
+			KillCounter.IncrementKills(STRING(gpGlobals->mapname));
+			report[0] = '\0';
+			strcat(report, "report_to_demo monster_tentacle 'tent1' killedon c1a4i total ");
+			strcat(report, num_kills);
+			strcat(report, "\n");
+			ALERT( at_console, report );
+			CLIENT_COMMAND ( pPlayer->edict(), report);
+			
+			KillCounter.IncrementKills(STRING(gpGlobals->mapname));
+			report[0] = '\0';
+			strcat(report, "report_to_demo monster_tentacle 'tent2' killedon c1a4i total ");
+			strcat(report, num_kills);
+			strcat(report, "\n");
+			ALERT( at_console, report );
+			CLIENT_COMMAND ( pPlayer->edict(), report);
+
+			KillCounter.IncrementKills(STRING(gpGlobals->mapname));
+			report[0] = '\0';
+			strcat(report, "report_to_demo monster_tentacle 'tent3' killedon c1a4i total ");
+			strcat(report, num_kills);
+			strcat(report, "\n");
+			ALERT( at_console, report );
+			CLIENT_COMMAND ( pPlayer->edict(), report);
+		}
+		else if (strcmp(STRING(gpGlobals->mapname), "c2a5") == 0 && strcmp(STRING(m_iszKillTarget), "slave_bridgerunner") == 0)
+		{
+			// Vortigaunt on bridge
+			CBaseEntity *pPlayer = UTIL_FindEntityByClassname( NULL, "player" );
+			if ((CVAR_GET_FLOAT( "kc_hit_marker" ) != 0)) {
+				EMIT_SOUND( pPlayer->edict(), CHAN_AUTO, "kc/hitmarker.wav", 1.0f, ATTN_NONE );
+			}
+			KillCounter.IncrementKills(STRING(gpGlobals->mapname));
+			char num_kills[16];
+			itoa(KillCounter.GetKills(), num_kills, 10);
+			char report[128];
+			report[0] = '\0';
+			strcat(report, "report_to_demo monster_alien_slave 'slave_bridgerunner' killedon c2a5 total ");
+			strcat(report, num_kills);
+			strcat(report, "\n");
+			ALERT( at_console, report );
+			CLIENT_COMMAND ( pPlayer->edict(), report);
+		}
+
 		pentKillTarget = FIND_ENTITY_BY_TARGETNAME( NULL, STRING(m_iszKillTarget) );
 		while ( !FNullEnt(pentKillTarget) )
 		{

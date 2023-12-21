@@ -21,6 +21,7 @@
 #include	"cbase.h"
 #include	"monsters.h"
 #include	"schedule.h"
+#include    "killcounter.h"
 
 #define	BARNACLE_BODY_HEIGHT	44 // how 'tall' the barnacle's model is.
 #define BARNACLE_PULL_SPEED		8
@@ -128,6 +129,8 @@ void CBarnacle :: Spawn()
 	pev->nextthink = gpGlobals->time + 0.5;
 
 	UTIL_SetOrigin ( pev, pev->origin );
+
+	m_iKillCounterEligble = 1;
 }
 
 int CBarnacle::TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
@@ -320,6 +323,8 @@ void CBarnacle :: BarnacleThink ( void )
 //=========================================================
 void CBarnacle :: Killed( entvars_t *pevAttacker, int iGib )
 {
+	HANDLE_KILL_COUNTER_KILL();
+	
 	CBaseMonster *pVictim;
 
 	pev->solid = SOLID_NOT;

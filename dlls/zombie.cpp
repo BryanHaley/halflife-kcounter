@@ -23,6 +23,7 @@
 #include	"cbase.h"
 #include	"monsters.h"
 #include	"schedule.h"
+#include    "killcounter.h"
 
 
 //=========================================================
@@ -50,6 +51,7 @@ public:
 	void AlertSound( void );
 	void IdleSound( void );
 	void AttackSound( void );
+	void Killed( entvars_t *pevAttacker, int iGib );
 
 	static const char *pAttackSounds[];
 	static const char *pIdleSounds[];
@@ -106,6 +108,12 @@ const char *CZombie::pPainSounds[] =
 	"zombie/zo_pain2.wav",
 };
 
+void CZombie :: Killed( entvars_t *pevAttacker, int iGib )
+{
+	HANDLE_KILL_COUNTER_KILL();
+	CBaseMonster :: Killed ( pevAttacker, iGib );
+}
+
 //=========================================================
 // Classify - indicates this monster's place in the 
 // relationship table.
@@ -145,6 +153,10 @@ int CZombie :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, floa
 		pev->velocity = pev->velocity + vecDir * flForce;
 		flDamage *= 0.3;
 	}
+
+	// HACK
+	if ( !IsAlive() )
+		HANDLE_KILL_COUNTER_KILL();
 
 	// HACK HACK -- until we fix this.
 	if ( IsAlive() )
@@ -284,6 +296,8 @@ void CZombie :: Spawn()
 	m_afCapability		= bits_CAP_DOORS_GROUP;
 
 	MonsterInit();
+
+	m_iKillCounterEligble = 1; // Make eligble for kill counter
 }
 
 //=========================================================

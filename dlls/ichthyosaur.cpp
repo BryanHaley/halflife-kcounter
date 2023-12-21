@@ -29,6 +29,7 @@
 #include	"animation.h"
 #include	"effects.h"
 #include	"weapons.h"
+#include    "killcounter.h"
 
 #define SEARCH_RETRY	16
 
@@ -206,6 +207,7 @@ void CIchthyosaur :: BiteSound( void )
 
 void CIchthyosaur :: DeathSound( void ) 
 { 
+	HANDLE_KILL_COUNTER_KILL();
 	EMIT_ICKY_SOUND( CHAN_VOICE, pDieSounds ); 
 }
 
@@ -397,6 +399,7 @@ void CIchthyosaur :: SetYawSpeed ( void )
 //
 void CIchthyosaur :: Killed( entvars_t *pevAttacker, int iGib )
 {
+	HANDLE_KILL_COUNTER_KILL();
 	CBaseMonster::Killed( pevAttacker, iGib );
 	pev->velocity = Vector( 0, 0, 0 );
 }
@@ -506,6 +509,8 @@ void CIchthyosaur :: Spawn()
 	UTIL_MakeVectorsPrivate(pev->angles, Forward, 0, 0);
 	pev->velocity = m_flightSpeed * Forward.Normalize();
 	m_SaveVelocity = pev->velocity;
+
+	m_iKillCounterEligble = 1; // Make eligble for kill counter
 }
 
 //=========================================================

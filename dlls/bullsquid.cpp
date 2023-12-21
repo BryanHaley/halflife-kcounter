@@ -25,6 +25,7 @@
 #include	"effects.h"
 #include	"decals.h"
 #include	"soundent.h"
+#include    "killcounter.h"
 
 #define		SQUID_SPRINT_DIST	256 // how close the squid has to get before starting to sprint and refusing to swerve
 
@@ -213,6 +214,8 @@ public:
 	int IgnoreConditions ( void );
 	MONSTERSTATE GetIdealState ( void );
 
+	void Killed( entvars_t *pevAttacker, int iGib );
+
 	int	Save( CSave &save ); 
 	int Restore( CRestore &restore );
 
@@ -234,6 +237,13 @@ TYPEDESCRIPTION	CBullsquid::m_SaveData[] =
 };
 
 IMPLEMENT_SAVERESTORE( CBullsquid, CBaseMonster );
+
+void CBullsquid :: Killed( entvars_t *pevAttacker, int iGib )
+{
+	HANDLE_KILL_COUNTER_KILL();
+	CBaseMonster :: Killed ( pevAttacker, iGib );
+}
+
 
 //=========================================================
 // IgnoreConditions 
@@ -684,6 +694,8 @@ void CBullsquid :: Spawn()
 	m_flNextSpitTime = gpGlobals->time;
 
 	MonsterInit();
+
+	m_iKillCounterEligble = 1; // Make eligble for kill counter
 }
 
 //=========================================================
@@ -736,6 +748,7 @@ void CBullsquid :: Precache()
 //=========================================================
 void CBullsquid :: DeathSound ( void )
 {
+	HANDLE_KILL_COUNTER_KILL();
 	switch ( RANDOM_LONG(0,2) )
 	{
 	case 0:	

@@ -34,6 +34,8 @@
 #include "decals.h"
 #include "gamerules.h"
 
+#include "killcounter.h"
+
 // #define DUCKFIX
 
 extern DLL_GLOBAL ULONG		g_ulModelIndexPlayer;
@@ -76,6 +78,24 @@ extern CGraph	WorldGraph;
 // Global Savedata for player
 TYPEDESCRIPTION	CBasePlayer::m_playerSaveData[] = 
 {
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter_UC, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter_OC, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter_WGH, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter_BP, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter_PU, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter_OAR, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter_APP, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter_RP, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter_QE, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter_ST, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter_FAF, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter_LC, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter_XEN, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter_GL, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter_INT, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, m_iKillCounter_END, FIELD_INTEGER ),
+
 	DEFINE_FIELD( CBasePlayer, m_flFlashLightTime, FIELD_TIME ),
 	DEFINE_FIELD( CBasePlayer, m_iFlashBattery, FIELD_INTEGER ),
 
@@ -166,6 +186,7 @@ int gmsgCurWeapon = 0;
 int gmsgHealth = 0;
 int gmsgDamage = 0;
 int gmsgBattery = 0;
+int gmsgKills = 0;
 int gmsgTrain = 0;
 int gmsgLogo = 0;
 int gmsgWeaponList = 0;
@@ -202,6 +223,7 @@ void LinkUserMessages( void )
 	gmsgFlashlight = REG_USER_MSG("Flashlight", 2);
 	gmsgFlashBattery = REG_USER_MSG("FlashBat", 1);
 	gmsgHealth = REG_USER_MSG( "Health", 1 );
+	gmsgKills = REG_USER_MSG( "Kills", 18 );
 	gmsgDamage = REG_USER_MSG( "Damage", 12 );
 	gmsgBattery = REG_USER_MSG( "Battery", 2);
 	gmsgTrain = REG_USER_MSG( "Train", 1);
@@ -245,6 +267,50 @@ void CBasePlayer :: Pain( void )
 		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain6.wav", 1, ATTN_NORM);
 	else
 		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain7.wav", 1, ATTN_NORM);
+}
+
+void CBasePlayer :: GetKillCounterKills( void )
+{
+	// Disgusting. The player should just have this map and KillCounter should store a reference to the player
+	m_iKillCounter = KillCounter.GetKills();
+	m_iKillCounter_UC = KillCounter.KillTable["UC"];
+	m_iKillCounter_OC = KillCounter.KillTable["OC"];
+	m_iKillCounter_WGH = KillCounter.KillTable["WGH"];
+	m_iKillCounter_BP = KillCounter.KillTable["BP"];
+	m_iKillCounter_PU = KillCounter.KillTable["PU"];
+	m_iKillCounter_OAR = KillCounter.KillTable["OAR"];
+	m_iKillCounter_APP = KillCounter.KillTable["APP"];
+	m_iKillCounter_RP = KillCounter.KillTable["RP"];
+	m_iKillCounter_QE = KillCounter.KillTable["QE"];
+	m_iKillCounter_ST = KillCounter.KillTable["ST"];
+	m_iKillCounter_FAF = KillCounter.KillTable["FAF"];
+	m_iKillCounter_LC = KillCounter.KillTable["LC"];
+	m_iKillCounter_XEN = KillCounter.KillTable["XEN"];
+	m_iKillCounter_GL = KillCounter.KillTable["GL"];
+	m_iKillCounter_INT = KillCounter.KillTable["INT"];
+	m_iKillCounter_END = KillCounter.KillTable["END"];
+}
+
+void CBasePlayer :: SetKillCounterKills( void )
+{
+	// Disgusting. The player should just have this map and KillCounter should store a reference to the player
+	KillCounter.SetKills(m_iKillCounter);
+	KillCounter.KillTable["UC"] = m_iKillCounter_UC;
+	KillCounter.KillTable["OC"] = m_iKillCounter_OC;
+	KillCounter.KillTable["WGH"] = m_iKillCounter_WGH;
+	KillCounter.KillTable["BP"] = m_iKillCounter_BP;
+	KillCounter.KillTable["PU"] = m_iKillCounter_PU;
+	KillCounter.KillTable["OAR"] = m_iKillCounter_OAR;
+	KillCounter.KillTable["APP"] = m_iKillCounter_APP;
+	KillCounter.KillTable["RP"] = m_iKillCounter_RP;
+	KillCounter.KillTable["QE"] = m_iKillCounter_QE;
+	KillCounter.KillTable["ST"] = m_iKillCounter_ST;
+	KillCounter.KillTable["FAF"] = m_iKillCounter_FAF;
+	KillCounter.KillTable["LC"] = m_iKillCounter_LC;
+	KillCounter.KillTable["XEN"] = m_iKillCounter_XEN;
+	KillCounter.KillTable["GL"] = m_iKillCounter_GL;
+	KillCounter.KillTable["INT"] = m_iKillCounter_INT;
+	KillCounter.KillTable["END"] = m_iKillCounter_END;
 }
 
 /* 
@@ -1233,8 +1299,10 @@ void CBasePlayer::WaterMove()
 		pev->dmgtime = 0;
 	}
 	
+#if 0 // This makes the speedrunners madge
 	if (!FBitSet(pev->flags, FL_WATERJUMP))
 		pev->velocity = pev->velocity - 0.8 * pev->waterlevel * gpGlobals->frametime * pev->velocity;
+#endif
 }
 
 
@@ -2113,6 +2181,34 @@ void CBasePlayer::PreThink(void)
 	{
 		pev->velocity = g_vecZero;
 	}
+
+	// We're on c1a0. Reset the kill counter.
+	if (strcmp(STRING(gpGlobals->mapname), "c1a0") == 0 && (CVAR_GET_FLOAT( "kc_auto_reset_on_c1a0" ) != 0)) {
+		// ALERT(at_console, "c1a0 detected. Resetting kill counter.");
+		KillCounter.ResetKills();
+	}
+
+	// Killcount: Send message so UI can update killcount
+	GetKillCounterKills();
+	MESSAGE_BEGIN( MSG_ONE, gmsgKills, NULL, pev );
+		WRITE_SHORT( m_iKillCounter );
+		WRITE_BYTE( m_iKillCounter_UC );
+		WRITE_BYTE( m_iKillCounter_OC );
+		WRITE_BYTE( m_iKillCounter_WGH );
+		WRITE_BYTE( m_iKillCounter_BP );
+		WRITE_BYTE( m_iKillCounter_PU );
+		WRITE_BYTE( m_iKillCounter_OAR );
+		WRITE_BYTE( m_iKillCounter_APP );
+		WRITE_BYTE( m_iKillCounter_RP );
+		WRITE_BYTE( m_iKillCounter_QE );
+		WRITE_BYTE( m_iKillCounter_ST );
+		WRITE_BYTE( m_iKillCounter_FAF );
+		WRITE_BYTE( m_iKillCounter_LC );
+		WRITE_BYTE( m_iKillCounter_XEN );
+		WRITE_BYTE( m_iKillCounter_GL );
+		WRITE_BYTE( m_iKillCounter_INT );
+		WRITE_BYTE( m_iKillCounter_END );
+	MESSAGE_END();
 }
 /* Time based Damage works as follows: 
 	1) There are several types of timebased damage:
@@ -3111,6 +3207,8 @@ int CBasePlayer::Save( CSave &save )
 	if ( !CBaseMonster::Save(save) )
 		return 0;
 
+	GetKillCounterKills();
+
 	return save.WriteFields( "PLAYER", this, m_playerSaveData, ARRAYSIZE(m_playerSaveData) );
 }
 
@@ -3164,6 +3262,9 @@ int CBasePlayer::Restore( CRestore &restore )
 	}
 
 	RenewItems();
+
+	SetKillCounterKills();
+	ALERT( at_console, "Kill counter: %d\n", KillCounter.GetKills() );
 
 	return status;
 }

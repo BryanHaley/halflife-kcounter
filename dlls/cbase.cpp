@@ -729,6 +729,11 @@ int CBaseEntity::ShouldToggle( USE_TYPE useType, BOOL currentState )
 	return 1;
 }
 
+void CBaseEntity :: MarkKillCounterInellgible ( void )
+{
+	m_iKillCounterEligble = 0;
+}
+
 
 int	CBaseEntity :: DamageDecal( int bitsDamageType )
 {

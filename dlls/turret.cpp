@@ -30,6 +30,7 @@
 #include "monsters.h"
 #include "weapons.h"
 #include "effects.h"
+#include "killcounter.h"
 
 extern Vector VecBModelOrigin( entvars_t* pevBModel );
 
@@ -270,6 +271,8 @@ void CBaseTurret::Spawn()
 	SetBoneController( 1, 0 );
 	m_flFieldOfView = VIEW_FIELD_FULL;
 	// m_flSightRange = TURRET_RANGE;
+
+	m_iKillCounterEligble = 1;
 }
 
 
@@ -919,6 +922,7 @@ void CBaseTurret::AutoSearchThink(void)
 
 void CBaseTurret ::	TurretDeath( void )
 {
+	HANDLE_KILL_COUNTER_KILL();
 	BOOL iActive = FALSE;
 
 	StudioFrameAdvance( );
@@ -1241,6 +1245,7 @@ void CSentry::SentryTouch( CBaseEntity *pOther )
 
 void CSentry ::	SentryDeath( void )
 {
+	HANDLE_KILL_COUNTER_KILL();
 	BOOL iActive = FALSE;
 
 	StudioFrameAdvance( );

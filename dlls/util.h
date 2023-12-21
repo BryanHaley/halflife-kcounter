@@ -432,6 +432,11 @@ extern DLL_GLOBAL int			g_Language;
 #define SF_BREAK_PRESSURE		4// can be broken by a player standing on it
 #define SF_BREAK_CROWBAR		256// instant break if hit with crowbar
 
+// kill counter
+#define SF_KILL_ELIGBLE 		8    // Counts as a kill on the kill counter. Used by func_breakables
+#define SF_IGNORE_KILL  		1024 // Ignores kill, even if eligble.
+
+
 // func_pushable (it's also func_breakable, so don't collide with those flags)
 #define SF_PUSH_BREAKABLE		128
 

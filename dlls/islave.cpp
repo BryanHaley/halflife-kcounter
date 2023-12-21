@@ -26,6 +26,8 @@
 #include	"weapons.h"
 #include	"soundent.h"
 
+#include    "killcounter.h"
+
 extern DLL_GLOBAL int		g_iSkillLevel;
 
 //=========================================================
@@ -251,6 +253,7 @@ void CISlave :: PainSound( void )
 
 void CISlave :: DeathSound( void )
 {
+	HANDLE_KILL_COUNTER_KILL();
 	EMIT_SOUND_DYN ( ENT(pev), CHAN_WEAPON, pDeathSounds[ RANDOM_LONG(0,ARRAYSIZE(pDeathSounds)-1) ], 1.0, ATTN_NORM, 0, m_voicePitch );
 }
 
@@ -542,6 +545,8 @@ void CISlave :: Spawn()
 	m_voicePitch		= RANDOM_LONG( 85, 110 );
 
 	MonsterInit();
+
+	m_iKillCounterEligble = 1; // Make eligble for kill counter
 }
 
 //=========================================================

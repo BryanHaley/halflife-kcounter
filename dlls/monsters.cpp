@@ -33,6 +33,7 @@
 #include "decals.h"
 #include "soundent.h"
 #include "gamerules.h"
+#include "killcounter.h"
 
 #define MONSTER_CUT_CORNER_DIST		8 // 8 means the monster's bounding box is contained without the box of the node in WC
 
@@ -61,6 +62,8 @@ TYPEDESCRIPTION	CBaseMonster::m_SaveData[] =
 	DEFINE_FIELD( CBaseMonster, m_flFieldOfView, FIELD_FLOAT ),
 	DEFINE_FIELD( CBaseMonster, m_flWaitFinished, FIELD_TIME ),
 	DEFINE_FIELD( CBaseMonster, m_flMoveWaitFinished, FIELD_TIME ),
+
+	DEFINE_FIELD( CBaseMonster, m_iKillCounterEligble, FIELD_INTEGER ),
 
 	DEFINE_FIELD( CBaseMonster, m_Activity, FIELD_INTEGER ),
 	DEFINE_FIELD( CBaseMonster, m_IdealActivity, FIELD_INTEGER ),
@@ -520,6 +523,13 @@ CSound* CBaseMonster :: PBestScent ( void )
 //=========================================================
 void CBaseMonster :: MonsterThink ( void )
 {
+	// Check manually for death -- sometimes Killed() doesn't get called during scripted sequences
+	// It's still necessary to check in Killed() as this won't be called if the monster is instagibbed
+	if (pev->deadflag == DEAD_DYING)
+	{
+		HANDLE_KILL_COUNTER_KILL();
+	}
+
 	pev->nextthink = gpGlobals->time + 0.1;// keep monster thinking.
 
 
@@ -2040,6 +2050,8 @@ void CBaseMonster :: MonsterInit ( void )
 
 	m_flDistTooFar		= 1024.0;
 	m_flDistLook		= 2048.0;
+
+	m_iKillCounterEligble = 0; // DON'T make eligble by default
 
 	// set eye position
 	SetEyePosition();

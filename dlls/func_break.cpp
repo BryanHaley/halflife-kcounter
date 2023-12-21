@@ -26,6 +26,7 @@
 #include "func_break.h"
 #include "decals.h"
 #include "explode.h"
+#include "killcounter.h"
 
 extern DLL_GLOBAL Vector		g_vecAttackDir;
 
@@ -137,6 +138,8 @@ TYPEDESCRIPTION CBreakable::m_SaveData[] =
 	DEFINE_FIELD( CBreakable, m_iszSpawnObject, FIELD_STRING ),
 
 	// Explosion magnitude is stored in pev->impulse
+
+	DEFINE_FIELD( CBreakable, m_iKillCounterEligble, FIELD_INTEGER ),
 };
 
 IMPLEMENT_SAVERESTORE( CBreakable, CBaseEntity );
@@ -171,6 +174,55 @@ void CBreakable::Spawn( void )
 	// Flag unbreakable glass as "worldbrush" so it will block ALL tracelines
 	if ( !IsBreakable() && pev->rendermode != kRenderNormal )
 		pev->flags |= FL_WORLDBRUSH;
+
+	// Are we one of the "special" func-type enemies?
+	// Ugly dumb poo-poo way to do it but C++98 didn't like me building a map of sets
+	// It'd be cleaner to just add a flag but then we'd have to modify maps
+	m_iKillCounterEligble = 0;
+	if ( FBitSet( pev->spawnflags, SF_KILL_ELIGBLE ) ) {
+		m_iKillCounterEligble = 1;
+	} else {
+		const char* map_name = STRING(gpGlobals->mapname);
+		const char* target_name = STRING(pev->target);
+		if (strcmp("c2a2g", map_name) == 0) 
+		{
+			if (strcmp("sniper_die1", target_name) == 0) m_iKillCounterEligble = 1;
+		} 
+		else if (strcmp("c2a5", map_name) == 0) 
+		{
+			if (strcmp("mortarpit_breakable_relay", target_name) == 0) m_iKillCounterEligble = 1;
+		} 
+		else if (strcmp("c2a5b", map_name) == 0) 
+		{
+			if (strcmp("brad_break_mm", target_name) == 0) m_iKillCounterEligble = 1;
+			// else if (strcmp("tank_break_mm", target_name) == 0) m_iKillCounterEligble = 1; // do this one via property
+		} 
+		else if (strcmp("c2a5c", map_name) == 0) 
+		{
+			if (strcmp("sniper_die1", target_name) == 0) m_iKillCounterEligble = 1;
+			else if (strcmp("sniper_die2", target_name) == 0) m_iKillCounterEligble = 1;
+		} 
+		else if (strcmp("c2a5e", map_name) == 0) 
+		{
+			if (strcmp("brad_break_mm", target_name) == 0) m_iKillCounterEligble = 1;
+			else if (strcmp("sniper_die1", target_name) == 0) m_iKillCounterEligble = 1;
+		} 
+		else if (strcmp("c3a1a", map_name) == 0) 
+		{
+			if (strcmp("tank_break_mm", target_name) == 0) m_iKillCounterEligble = 1;
+		}
+		else if (strcmp("c3a1b", map_name) == 0) 
+		{
+			if (strcmp("kill_alien_turret_2", target_name) == 0) m_iKillCounterEligble = 1;
+		}
+		else if (strcmp("c4a1", map_name) == 0) 
+		{
+			if (strcmp("f1_kill", target_name) == 0) m_iKillCounterEligble = 1;
+			else if (strcmp("kill_f2", target_name) == 0) m_iKillCounterEligble = 1;
+			else if (strcmp("f3_kill", target_name) == 0) m_iKillCounterEligble = 1;
+			else if (strcmp("f4_kill", target_name) == 0) m_iKillCounterEligble = 1;
+		}
+	}
 }
 
 
@@ -581,6 +633,8 @@ int CBreakable :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, f
 
 void CBreakable::Die( void )
 {
+	HANDLE_KILL_COUNTER_KILL()
+
 	Vector vecSpot;// shard origin
 	Vector vecVelocity;// shard velocity
 	CBaseEntity *pEntity = NULL;

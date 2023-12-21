@@ -23,6 +23,7 @@
 #include "player.h"
 #include "soundent.h"
 #include "gamerules.h"
+#include "killcounter.h"
 
 enum w_squeak_e {
 	WSQUEAK_IDLE1 = 0,
@@ -113,6 +114,12 @@ void CSqueakGrenade :: Spawn( void )
 	// motor
 	pev->movetype = MOVETYPE_BOUNCE;
 	pev->solid = SOLID_BBOX;
+
+	// Snarks should always be ghosts
+	if ((CVAR_GET_FLOAT( "kc_ghosts" ) != 0)) {
+		pev->rendermode = kRenderTransAdd;
+		pev->renderamt = 128;
+	}
 
 	SET_MODEL(ENT(pev), "models/w_squeak.mdl");
 	UTIL_SetSize(pev, Vector( -4, -4, 0), Vector(4, 4, 8));

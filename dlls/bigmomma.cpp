@@ -24,6 +24,7 @@
 #include	"schedule.h"
 #include	"decals.h"
 #include	"weapons.h"
+#include    "killcounter.h"
 
 
 #define SF_INFOBM_RUN		0x0001
@@ -510,6 +511,7 @@ void CBigMomma :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			break;
 
 		case BIG_AE_DEATHSOUND:
+			HANDLE_KILL_COUNTER_KILL();
 			EMIT_SOUND_ARRAY_DYN( CHAN_VOICE, pDeathSounds );
 			break;
 

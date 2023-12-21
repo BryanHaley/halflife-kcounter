@@ -21,6 +21,7 @@
 #include "weapons.h"
 #include "nodes.h"
 #include "effects.h"
+#include "killcounter.h"
 
 #define N_SCALE		15
 #define N_SPHERES	20
@@ -323,6 +324,8 @@ void CNihilanth :: Spawn( void )
 	m_irritation = 2;
 	pev->health = 100;
 	*/
+
+	m_iKillCounterEligble = 1;
 }
 
 
@@ -365,6 +368,7 @@ void CNihilanth :: PainSound( void )
 
 void CNihilanth :: DeathSound( void )
 {
+	HANDLE_KILL_COUNTER_KILL();
 	EMIT_SOUND( edict(), CHAN_VOICE, RANDOM_SOUND_ARRAY( pDeathSounds ), 1.0, 0.1 ); 
 }
 
@@ -418,6 +422,7 @@ void CNihilanth::StartupThink( void )
 
 void CNihilanth :: Killed( entvars_t *pevAttacker, int iGib )
 {
+	HANDLE_KILL_COUNTER_KILL();
 	CBaseMonster::Killed( pevAttacker, iGib );
 }
 
@@ -648,7 +653,14 @@ void CNihilanth :: MakeFriend( Vector vecStart )
 					TraceResult tr;
 					UTIL_TraceHull( node.m_vecOrigin + Vector( 0, 0, 32 ), node.m_vecOrigin + Vector( 0, 0, 32 ), dont_ignore_monsters, large_hull, NULL, &tr );
 					if (tr.fStartSolid == 0)
+					{
 						m_hFriend[i] = Create("monster_alien_controller", node.m_vecOrigin, pev->angles );
+						m_hFriend[i]->MarkKillCounterInellgible();
+						if ((CVAR_GET_FLOAT( "kc_ghosts" ) != 0)) {
+							m_hFriend[i]->pev->rendermode = kRenderTransAdd;
+							m_hFriend[i]->pev->renderamt = 128;
+						}
+					}
 				}
 			}
 			else
@@ -660,7 +672,14 @@ void CNihilanth :: MakeFriend( Vector vecStart )
 					TraceResult tr;
 					UTIL_TraceHull( node.m_vecOrigin + Vector( 0, 0, 36 ), node.m_vecOrigin + Vector( 0, 0, 36 ), dont_ignore_monsters, human_hull, NULL, &tr );
 					if (tr.fStartSolid == 0)
+					{
 						m_hFriend[i] = Create("monster_alien_slave", node.m_vecOrigin, pev->angles );
+						m_hFriend[i]->MarkKillCounterInellgible();
+						if ((CVAR_GET_FLOAT( "kc_ghosts" ) != 0)) {
+							m_hFriend[i]->pev->rendermode = kRenderTransAdd;
+							m_hFriend[i]->pev->renderamt = 128;
+						}
+					}
 				}
 			}
 			if (m_hFriend[i] != NULL)

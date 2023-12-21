@@ -21,6 +21,7 @@
 #include "weapons.h"
 #include "nodes.h"
 #include "effects.h"
+#include "killcounter.h"
 
 extern DLL_GLOBAL int		g_iSkillLevel;
 
@@ -149,6 +150,7 @@ void CApache :: Spawn( void )
 	}
 
 	m_iRockets = 10;
+	m_iKillCounterEligble = 1;
 }
 
 
@@ -194,6 +196,8 @@ void CApache::StartupUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 
 void CApache :: Killed( entvars_t *pevAttacker, int iGib )
 {
+	HANDLE_KILL_COUNTER_KILL();
+	
 	pev->movetype = MOVETYPE_TOSS;
 	pev->gravity = 0.3;
 

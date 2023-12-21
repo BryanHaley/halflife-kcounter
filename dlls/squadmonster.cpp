@@ -24,6 +24,7 @@
 #include "saverestore.h"
 #include "squadmonster.h"
 #include "plane.h"
+#include "killcounter.h"
 
 //=========================================================
 // Save/Restore
@@ -124,6 +125,8 @@ void CSquadMonster :: ScheduleChange ( void )
 //=========================================================
 void CSquadMonster :: Killed( entvars_t *pevAttacker, int iGib )
 {
+	HANDLE_KILL_COUNTER_KILL();
+	
 	VacateSlot();
 
 	if ( InSquad() )

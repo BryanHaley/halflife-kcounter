@@ -26,13 +26,24 @@
 #include "cl_util.h"
 #include "parsemsg.h"
 #include <string.h>
+#include <stdio.h>
+
+#pragma warning(disable: 4786)
+#include <map>
+#include <string.h>
+#include <fstream>
 
 
 DECLARE_MESSAGE(m_Health, Health )
 DECLARE_MESSAGE(m_Health, Damage )
+DECLARE_MESSAGE(m_Health, Kills )
 
 #define PAIN_NAME "sprites/%d_pain.spr"
 #define DAMAGE_NAME "sprites/%d_dmg.spr"
+
+std::map<const char*, int> map_kills_table;
+std::map<const char*, int> map_counts_table;
+// std::map<const char*, const char*> level_chapters; // Why are C++98 maps so ass???
 
 int giDmgHeight, giDmgWidth;
 
@@ -52,10 +63,272 @@ int giDmgFlags[NUM_DMG_TYPES] =
 	DMG_HALLUC
 };
 
+void init_map_kills(void)
+{
+	// Init kill table
+	map_kills_table["END"] = 0;
+	map_kills_table["INT"] = 0;
+	map_kills_table["GL"] = 0;
+	map_kills_table["XEN"] = 0;
+	map_kills_table["LC"] = 0;
+	map_kills_table["FAF"] = 0;
+	map_kills_table["ST"] = 0;
+	map_kills_table["QE"] = 0;
+	map_kills_table["RP"] = 0;
+	map_kills_table["APP"] = 0;
+	map_kills_table["OAR"] = 0;
+	map_kills_table["PU"] = 0;
+	map_kills_table["BP"] = 0;
+	map_kills_table["WGH"] = 0;
+	map_kills_table["OC"] = 0;
+	map_kills_table["UC"] = 0;
+}
+
+void load_count_file(void)
+{
+	// Init count table
+	map_counts_table["END"] = 0;
+	map_counts_table["INT"] = 0;
+	map_counts_table["GL"] = 0;
+	map_counts_table["XEN"] = 0;
+	map_counts_table["LC"] = 0;
+	map_counts_table["FAF"] = 0;
+	map_counts_table["ST"] = 0;
+	map_counts_table["QE"] = 0;
+	map_counts_table["RP"] = 0;
+	map_counts_table["APP"] = 0;
+	map_counts_table["OAR"] = 0;
+	map_counts_table["PU"] = 0;
+	map_counts_table["BP"] = 0;
+	map_counts_table["WGH"] = 0;
+	map_counts_table["OC"] = 0;
+	map_counts_table["UC"] = 0;
+
+	std::ifstream count_file;
+
+	char kc_path[256]; kc_path[0] = '\0';
+	char valve_path[256]; valve_path[0] = '\0';
+	char valve_won_path[256]; valve_won_path[0] = '\0';
+	char *counts_filepath = (char *)CVAR_GET_STRING( "kc_counts_file" );
+
+	strncat(kc_path, "killcount/", 256); strncat(kc_path, counts_filepath, 256);
+	strncat(valve_path, "valve/", 256); strncat(valve_path, counts_filepath, 256);
+	strncat(valve_won_path, "valve_WON/", 256); strncat(valve_won_path, counts_filepath, 256);
+
+	count_file.open(counts_filepath);
+	if (count_file.fail()) {
+		count_file.close();
+		count_file.clear();
+		count_file.open(kc_path);
+	} 
+	if (count_file.fail()) {
+		count_file.close();
+		count_file.clear();
+		count_file.open(valve_won_path);
+	} 
+	if (count_file.fail()) {
+		count_file.close();
+		count_file.clear();
+		count_file.open(valve_path);
+	} 
+	if (count_file.fail()) {
+		count_file.close();
+		return;
+	}
+
+	count_file >> map_counts_table["UC"];
+	count_file >> map_counts_table["OC"];
+	count_file >> map_counts_table["WGH"];
+	count_file >> map_counts_table["BP"];
+	count_file >> map_counts_table["PU"];
+	count_file >> map_counts_table["OAR"];
+	count_file >> map_counts_table["APP"];
+	count_file >> map_counts_table["RP"];
+	count_file >> map_counts_table["QE"];
+	count_file >> map_counts_table["ST"];
+	count_file >> map_counts_table["FAF"];
+	count_file >> map_counts_table["LC"];
+	count_file >> map_counts_table["XEN"];
+	count_file >> map_counts_table["GL"];
+	count_file >> map_counts_table["INT"];
+	count_file >> map_counts_table["END"];
+
+	count_file.close();
+}
+
+const char *get_chapter_from_map_name(const char* map_name)
+{
+	// This WAS a map and then I thought something wasn't working but I was wrong but I already changed it :-)))) That's what I get for not using version control
+	if (strcmp("c0a0", map_name) == 0
+		|| strcmp("c0a0a", map_name) == 0
+		|| strcmp("c0a0b", map_name) == 0
+		|| strcmp("c0a0c", map_name) == 0
+		|| strcmp("c0a0d", map_name) == 0
+		|| strcmp("c0a0e", map_name) == 0
+		|| strcmp("c1a0", map_name) == 0
+		|| strcmp("c1a0d", map_name) == 0
+		|| strcmp("c1a0a", map_name) == 0
+		|| strcmp("c1a0b", map_name) == 0
+		|| strcmp("c1a0c", map_name) == 0
+		|| strcmp("c1a0e", map_name) == 0
+		|| strcmp("c1a1", map_name) == 0
+		|| strcmp("c1a1a", map_name) == 0
+		|| strcmp("c1a1f", map_name) == 0
+		|| strcmp("c1a1b", map_name) == 0
+		|| strcmp("c1a1c", map_name) == 0
+		|| strcmp("c1a1d", map_name) == 0)
+	{
+		return "UC";
+	}
+
+	else if (strcmp("c1a2", map_name) == 0
+		|| strcmp("c1a2a", map_name) == 0
+		|| strcmp("c1a2b", map_name) == 0
+		|| strcmp("c1a2c", map_name) == 0
+		|| strcmp("c1a2d", map_name) == 0)
+	{
+		return "OC";
+	}
+
+	else if (strcmp("c1a3", map_name) == 0
+		|| strcmp("c1a3a", map_name) == 0
+		|| strcmp("c1a3b", map_name) == 0
+		|| strcmp("c1a3c", map_name) == 0
+		|| strcmp("c1a3d", map_name) == 0)
+	{
+		return "WGH";
+	}
+
+	else if (strcmp("c1a4", map_name) == 0
+		|| strcmp("c1a4k", map_name) == 0
+		|| strcmp("c1a4b", map_name) == 0
+		|| strcmp("c1a4f", map_name) == 0
+		|| strcmp("c1a4d", map_name) == 0
+		|| strcmp("c1a4e", map_name) == 0
+		|| strcmp("c1a4i", map_name) == 0
+		|| strcmp("c1a4g", map_name) == 0
+		|| strcmp("c1a4j", map_name) == 0)
+	{
+		return "BP";
+	}
+
+	else if (strcmp("c2a1", map_name) == 0
+		|| strcmp("c2a1a", map_name) == 0
+		|| strcmp("c2a1b", map_name) == 0)
+	{
+		return "PU";
+	}
+
+	else if (strcmp("c2a2", map_name) == 0
+		|| strcmp("c2a2a", map_name) == 0
+		|| strcmp("c2a2b1", map_name) == 0
+		|| strcmp("c2a2b2", map_name) == 0
+		|| strcmp("c2a2c", map_name) == 0
+		|| strcmp("c2a2d", map_name) == 0
+		|| strcmp("c2a2e", map_name) == 0
+		|| strcmp("c2a2f", map_name) == 0
+		|| strcmp("c2a2g", map_name) == 0
+		|| strcmp("c2a2h", map_name) == 0)
+	{
+		return "OAR";
+	}
+
+	else if (strcmp("c2a3", map_name) == 0
+		|| strcmp("c2a3a", map_name) == 0
+		|| strcmp("c2a3b", map_name) == 0
+		|| strcmp("c2a3c", map_name) == 0
+		|| strcmp("c2a3d", map_name) == 0
+		|| strcmp("c2a3e", map_name) == 0)
+	{
+		return "APP";
+	}
+
+	else if (strcmp("c2a4", map_name) == 0
+		|| strcmp("c2a4a", map_name) == 0
+		|| strcmp("c2a4b", map_name) == 0
+		|| strcmp("c2a4c", map_name) == 0)
+	{
+		return "RP";
+	}
+
+	else if (strcmp("c2a4d", map_name) == 0
+		|| strcmp("c2a4e", map_name) == 0
+		|| strcmp("c2a4f", map_name) == 0
+		|| strcmp("c2a4g", map_name) == 0)
+	{
+		return "QE";
+	}
+
+	else if (strcmp("c2a5", map_name) == 0
+		|| strcmp("c2a5w", map_name) == 0
+		|| strcmp("c2a5x", map_name) == 0
+		|| strcmp("c2a5a", map_name) == 0
+		|| strcmp("c2a5b", map_name) == 0
+		|| strcmp("c2a5c", map_name) == 0
+		|| strcmp("c2a5d", map_name) == 0
+		|| strcmp("c2a5e", map_name) == 0
+		|| strcmp("c2a5f", map_name) == 0
+		|| strcmp("c2a5g", map_name) == 0)
+	{
+		return "ST";
+	}
+
+	else if (strcmp("c3a1", map_name) == 0
+		|| strcmp("c3a1a", map_name) == 0
+		|| strcmp("c3a1b", map_name) == 0)
+	{
+		return "FAF";
+	}
+
+	else if (strcmp("c3a2e", map_name) == 0
+		|| strcmp("c3a2", map_name) == 0
+		|| strcmp("c3a2a", map_name) == 0
+		|| strcmp("c3a2b", map_name) == 0
+		|| strcmp("c3a2c", map_name) == 0
+		|| strcmp("c3a2d", map_name) == 0
+		|| strcmp("c3a2f", map_name) == 0)
+	{
+		return "LC";
+	}
+
+	else if (strcmp("c4a1", map_name) == 0)
+	{
+		return "XEN";
+	}
+
+	else if (strcmp("c4a1", map_name) == 0
+		|| strcmp("c4a2", map_name) == 0
+		|| strcmp("c4a2a", map_name) == 0
+		|| strcmp("c4a2b", map_name) == 0)
+	{
+		return "GL";
+	}
+
+	else if (strcmp("c4a1a", map_name) == 0
+		|| strcmp("c4a1b", map_name) == 0
+		|| strcmp("c4a1c", map_name) == 0
+		|| strcmp("c4a1d", map_name) == 0
+		|| strcmp("c4a1e", map_name) == 0
+		|| strcmp("c4a1f", map_name) == 0)
+	{
+		return "INT";
+	}
+
+	else
+	{
+		return "END";
+	}
+}
+
+// Dummy command just used as a marker in the demo file
+DECLARE_COMMAND(m_Health, ReportToDemo);
+void CHudHealth::UserCmd_ReportToDemo(void) { }
+
 int CHudHealth::Init(void)
 {
 	HOOK_MESSAGE(Health);
 	HOOK_MESSAGE(Damage);
+	HOOK_MESSAGE(Kills);
 	m_iHealth = 100;
 	m_fFade = 0;
 	m_iFlags = 0;
@@ -66,6 +339,23 @@ int CHudHealth::Init(void)
 
 	memset(m_dmg, 0, sizeof(DAMAGE_IMAGE) * NUM_DMG_TYPES);
 
+	CVAR_CREATE( "kc_counts_file", "counts.txt", FCVAR_ARCHIVE );
+	CVAR_CREATE( "kc_ghosts", "1", FCVAR_ARCHIVE );
+	CVAR_CREATE( "kc_hit_marker", "1", FCVAR_ARCHIVE );
+	CVAR_CREATE( "kc_count_friendlies", "0", FCVAR_ARCHIVE ); 
+	CVAR_CREATE( "kc_auto_reset_on_c1a0", "1", FCVAR_ARCHIVE );
+	CVAR_CREATE( "kc_show_kill_table", "1", FCVAR_ARCHIVE );
+	CVAR_CREATE( "kc_show_all_chapters", "1", FCVAR_ARCHIVE );
+	CVAR_CREATE( "kc_show_current_map", "0", FCVAR_ARCHIVE );
+	CVAR_CREATE( "kc_kill_table_x", "20", FCVAR_ARCHIVE );
+	CVAR_CREATE( "kc_kill_table_y", "220", FCVAR_ARCHIVE );
+	CVAR_CREATE( "kc_map_x", "20", FCVAR_ARCHIVE );
+	CVAR_CREATE( "kc_map_y", "200", FCVAR_ARCHIVE );
+
+	HOOK_COMMAND("report_to_demo", ReportToDemo);
+
+	//init_map_kills();
+	//load_count_file();
 
 	gHUD.AddHudElem(this);
 	return 1;
@@ -94,6 +384,11 @@ int CHudHealth::VidInit(void)
 
 	giDmgHeight = gHUD.GetSpriteRect(m_HUD_dmg_bio).right - gHUD.GetSpriteRect(m_HUD_dmg_bio).left;
 	giDmgWidth = gHUD.GetSpriteRect(m_HUD_dmg_bio).bottom - gHUD.GetSpriteRect(m_HUD_dmg_bio).top;
+
+	// Need to do this here so kc_counts_file has a chance to apply
+	init_map_kills();
+	load_count_file();
+
 	return 1;
 }
 
@@ -111,6 +406,31 @@ int CHudHealth:: MsgFunc_Health(const char *pszName,  int iSize, void *pbuf )
 		m_fFade = FADE_TIME;
 		m_iHealth = x;
 	}
+
+	return 1;
+}
+
+int CHudHealth:: MsgFunc_Kills(const char *pszName,  int iSize, void *pbuf )
+{
+	BEGIN_READ( pbuf, iSize );
+
+	m_iKills = (int) READ_SHORT(); // 2
+	map_kills_table["UC"] = (int) READ_BYTE();
+	map_kills_table["OC"] = (int) READ_BYTE();
+	map_kills_table["WGH"] = (int) READ_BYTE();
+	map_kills_table["BP"] = (int) READ_BYTE();
+	map_kills_table["PU"] = (int) READ_BYTE();
+	map_kills_table["OAR"] = (int) READ_BYTE();
+	map_kills_table["APP"] = (int) READ_BYTE();
+	map_kills_table["RP"] = (int) READ_BYTE();
+	map_kills_table["QE"] = (int) READ_BYTE();
+	map_kills_table["ST"] = (int) READ_BYTE();
+	map_kills_table["FAF"] = (int) READ_BYTE();
+	map_kills_table["LC"] = (int) READ_BYTE();
+	map_kills_table["XEN"] = (int) READ_BYTE();
+	map_kills_table["GL"] = (int) READ_BYTE();
+	map_kills_table["INT"] = (int) READ_BYTE();
+	map_kills_table["END"] = (int) READ_BYTE(); // 18
 
 	return 1;
 }
@@ -228,6 +548,82 @@ int CHudHealth::Draw(float flTime)
 		int iHeight = gHUD.m_iFontHeight;
 		int iWidth = HealthWidth/10;
 		FillRGBA(x, y, iWidth, iHeight, 255, 160, 0, a);
+
+		r = 255;
+		g = 160;
+		b = 0;
+		a = MIN_ALPHA;
+		ScaleColors(r, g, b, a );
+
+		// Draw kill counter
+		x = CrossWidth /2;
+		y = ScreenHeight - gHUD.m_iFontHeight - gHUD.m_iFontHeight * 2;
+
+		// Draw kill counter
+		x = CrossWidth + HealthWidth / 2;
+		y = ScreenHeight - gHUD.m_iFontHeight - gHUD.m_iFontHeight * 2;
+		x = gHUD.DrawHudNumber(x, y, DHN_3DIGITS | DHN_DRAWZERO, m_iKills, r, g, b); // 255, 160, 0
+		gHUD.DrawHudString( x+9, y+8, 320, "Kills", r, g, b );
+
+		// Kill counter stuff
+		bool draw_kill_table = CVAR_GET_FLOAT( "kc_show_kill_table" ) != 0;
+		bool show_all_chapters = CVAR_GET_FLOAT( "kc_show_all_chapters" ) != 0;
+		bool show_current_map = CVAR_GET_FLOAT( "kc_show_current_map" ) != 0;
+
+		char map_name [64];
+		memset(map_name, '\0', 64);
+		strncpy(map_name, gEngfuncs.pfnGetLevelName()+5, strlen(gEngfuncs.pfnGetLevelName()+5)-4);
+		const char *chapter = get_chapter_from_map_name(map_name);
+
+		if (show_current_map && strncmp(map_name, "c5a1", 64) != 0) {
+			x = (int) CVAR_GET_FLOAT( "kc_map_x" );
+			y = (int) CVAR_GET_FLOAT( "kc_map_y" );
+
+			r = 255;
+			g = 160;
+			b = 0;
+			a = MIN_ALPHA;
+			ScaleColors(r, g, b, a );
+
+			gHUD.DrawHudString( x, y, ScreenWidth, map_name, r, g, b );
+		}
+
+		if (draw_kill_table || strncmp(map_name, "c5a1", 64) == 0) {
+			x = (int) CVAR_GET_FLOAT( "kc_kill_table_x" );
+			y = (int) CVAR_GET_FLOAT( "kc_kill_table_y" );
+			char num_buff [20];
+			char count_buff [20];
+			char str_buff [20];
+
+			for (std::map<const char*, int>::iterator it = map_kills_table.begin(); it != map_kills_table.end(); ++it)
+			{
+				r = 255;
+				g = 160;
+				b = 0;
+				a = MIN_ALPHA;
+				ScaleColors(r, g, b, a );
+
+				itoa(it->second, num_buff, 10);
+				itoa(map_counts_table[it->first], count_buff, 10);
+				strcpy(str_buff, it->first);
+
+				if (it->second >= map_counts_table[it->first]) {
+					r = 0;
+					g = 255;
+					b = 0;
+					a = MIN_ALPHA;
+					ScaleColors(r, g, b, a );
+				}
+
+				if ((!show_all_chapters && strncmp(map_name, "c5a1", 64) != 0) && strcmp(chapter, it->first) != 0) continue; // I undid all the maps and did a bunch of ugly if/else chains because find() wasn't working here but it turns out the outer if statement block was just using the wrong cvar :-))))) FML. That's what I get for 4am coding.
+
+				gHUD.DrawHudString( x, y, ScreenWidth, str_buff, r, g, b );
+				gHUD.DrawHudString( x+50, y, ScreenWidth, num_buff, r, g, b );
+				gHUD.DrawHudString( x+80, y, ScreenWidth, " / ", r, g, b );
+				gHUD.DrawHudString( x+100, y, ScreenWidth, count_buff, r, g, b );
+				y += 15;
+			}
+		}
 	}
 
 	DrawDamage(flTime);

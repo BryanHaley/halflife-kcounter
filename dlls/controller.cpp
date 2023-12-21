@@ -26,6 +26,7 @@
 #include	"schedule.h"
 #include	"weapons.h"
 #include	"squadmonster.h"
+#include    "killcounter.h"
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -256,6 +257,7 @@ void CController :: AttackSound( void )
 
 void CController :: DeathSound( void )
 {
+	HANDLE_KILL_COUNTER_KILL();
 	EMIT_SOUND_ARRAY_DYN( CHAN_VOICE, pDeathSounds ); 
 }
 
@@ -374,6 +376,8 @@ void CController :: Spawn()
 	m_MonsterState		= MONSTERSTATE_NONE;
 
 	MonsterInit();
+
+	m_iKillCounterEligble = 1; // Make eligble for kill counter
 }
 
 //=========================================================

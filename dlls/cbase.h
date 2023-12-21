@@ -250,6 +250,9 @@ public:
 	int		IsDormant( void );
 	BOOL    IsLockedByMaster( void ) { return FALSE; }
 
+	int  m_iKillCounterEligble;
+	void MarkKillCounterInellgible ( void );
+
 #ifdef _DEBUG
 	static CBaseEntity *Instance( edict_t *pent ) 
 	{ 

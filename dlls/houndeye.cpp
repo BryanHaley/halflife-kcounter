@@ -25,6 +25,7 @@
 #include	"nodes.h"
 #include	"squadmonster.h"
 #include	"soundent.h"
+#include    "killcounter.h"
 
 extern CGraph WorldGraph;
 
@@ -345,6 +346,8 @@ void CHoundeye :: Spawn()
 	m_afCapability		|= bits_CAP_SQUAD;
 
 	MonsterInit();
+
+	m_iKillCounterEligble = 1; // Make eligble for kill counter
 }
 
 //=========================================================
@@ -469,6 +472,7 @@ void CHoundeye :: AlertSound ( void )
 //=========================================================
 void CHoundeye :: DeathSound ( void )
 {
+	HANDLE_KILL_COUNTER_KILL();
 	switch ( RANDOM_LONG(0,2) )
 	{
 	case 0:	

@@ -25,6 +25,7 @@
 #include	"weapons.h"
 #include	"soundent.h"
 #include	"hornet.h"
+#include    "killcounter.h"
 
 //=========================================================
 // monster-specific schedule types
@@ -337,6 +338,7 @@ void CAGrunt :: PrescheduleThink ( void )
 //=========================================================
 void CAGrunt :: DeathSound ( void )
 {
+	HANDLE_KILL_COUNTER_KILL();
 	StopTalking();
 
 	EMIT_SOUND ( ENT(pev), CHAN_VOICE, pDieSounds[RANDOM_LONG(0,ARRAYSIZE(pDieSounds)-1)], 1.0, ATTN_NORM );
@@ -584,8 +586,9 @@ void CAGrunt :: Spawn()
 
 	m_flNextSpeakTime	= m_flNextWordTime = gpGlobals->time + 10 + RANDOM_LONG(0, 10);
 
-
 	MonsterInit();
+
+	m_iKillCounterEligble = 1; // Make eligble for kill counter
 }
 
 //=========================================================

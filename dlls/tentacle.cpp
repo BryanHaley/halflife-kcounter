@@ -290,6 +290,12 @@ void CTentacle :: Spawn( )
 
 	// SetThink( Test );
 	UTIL_SetOrigin( pev, pev->origin );
+
+	// Make tentacles except the ones in blast pit ghosts
+	if ( ( !FBitSet(pev->spawnflags, SF_KILL_ELIGBLE) ) && ( CVAR_GET_FLOAT( "kc_ghosts" ) != 0 ) ) {
+		pev->rendermode = kRenderTransAdd;
+		pev->renderamt = 128;
+	}
 }
 
 void CTentacle :: Precache( )

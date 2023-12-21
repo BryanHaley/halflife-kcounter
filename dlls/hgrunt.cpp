@@ -41,6 +41,7 @@
 #include	"soundent.h"
 #include	"effects.h"
 #include	"customentity.h"
+#include    "killcounter.h"
 
 int g_fGruntQuestion;				// true if an idle grunt asked a question. Cleared when someone answers.
 
@@ -1038,6 +1039,8 @@ void CHGrunt :: Spawn()
 	CTalkMonster::g_talkWaitTime = 0;
 
 	MonsterInit();
+
+	m_iKillCounterEligble = 1; // Make eligble for kill counter
 }
 
 //=========================================================
@@ -1203,6 +1206,7 @@ void CHGrunt :: PainSound ( void )
 //=========================================================
 void CHGrunt :: DeathSound ( void )
 {
+	HANDLE_KILL_COUNTER_KILL();
 	switch ( RANDOM_LONG(0,2) )
 	{
 	case 0:	

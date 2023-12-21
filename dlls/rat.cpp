@@ -21,6 +21,7 @@
 #include	"cbase.h"
 #include	"monsters.h"
 #include	"schedule.h"
+#include	"killcounter.h"
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -81,6 +82,12 @@ void CRat :: Spawn()
 	pev->view_ofs		= Vector ( 0, 0, 6 );// position of the eyes relative to monster's origin.
 	m_flFieldOfView		= 0.5;// indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_MonsterState		= MONSTERSTATE_NONE;
+
+	// Should always be ghost
+	if ((CVAR_GET_FLOAT( "kc_ghosts" ) != 0)) {
+		pev->rendermode = kRenderTransAdd;
+		pev->renderamt = 128;
+	}
 
 	MonsterInit();
 }

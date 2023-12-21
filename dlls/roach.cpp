@@ -23,6 +23,7 @@
 #include	"schedule.h"
 #include	"soundent.h"
 #include	"decals.h"
+#include	"killcounter.h"
 
 #define		ROACH_IDLE				0
 #define		ROACH_BORED				1
@@ -140,6 +141,12 @@ void CRoach :: Spawn()
 	m_flLastLightLevel	= -1;
 	m_iMode				= ROACH_IDLE;
 	m_flNextSmellTime	= gpGlobals->time;
+
+	// Should always be ghost
+	if ((CVAR_GET_FLOAT( "kc_ghosts" ) != 0)) {
+		pev->rendermode = kRenderTransAdd;
+		pev->renderamt = 128;
+	}
 }
 
 //=========================================================

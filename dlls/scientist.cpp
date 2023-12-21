@@ -27,6 +27,8 @@
 #include	"animation.h"
 #include	"soundent.h"
 
+#include "killcounter.h"
+
 
 #define		NUM_SCIENTIST_HEADS		4 // four heads available for scientist model
 enum { HEAD_GLASSES = 0, HEAD_EINSTEIN = 1, HEAD_LUTHER = 2, HEAD_SLICK = 3 };
@@ -687,6 +689,10 @@ void CScientist :: Spawn( void )
 	
 	MonsterInit();
 	SetUse( FollowerUse );
+
+	if (CVAR_GET_FLOAT( "kc_count_friendlies" ) != 0) {
+		m_iKillCounterEligble = 1; // Make eligble for kill counter
+	}
 }
 
 //=========================================================
@@ -808,6 +814,7 @@ void CScientist :: PainSound ( void )
 void CScientist :: DeathSound ( void )
 {
 	PainSound();
+	HANDLE_KILL_COUNTER_KILL();
 }
 
 
@@ -815,6 +822,7 @@ void CScientist::Killed( entvars_t *pevAttacker, int iGib )
 {
 	SetUse( NULL );	
 	CTalkMonster::Killed( pevAttacker, iGib );
+	HANDLE_KILL_COUNTER_KILL();
 }
 
 
