@@ -772,7 +772,7 @@ void CGargantua :: Spawn()
 	m_seeTime = gpGlobals->time + 5;
 	m_flameTime = gpGlobals->time + 2;
 
-	m_iKillCounterEligble = 1; // Make eligble for kill counter
+	MAKE_KILL_COUNTER_ELIGBLE();
 }
 
 

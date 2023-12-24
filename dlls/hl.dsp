@@ -61,8 +61,8 @@ TargetDir=.\Releasehl
 InputPath=.\Releasehl\hl.dll
 SOURCE="$(InputPath)"
 
-"Z:\Fileshare\Misc\HL2005\Half-Life\killcount\dlls\hl.dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	copy $(TargetDir)\hl.dll Z:\Fileshare\Misc\HL2005\Half-Life\killcount\dlls
+"D:\Fileshare\Misc\HL2005\Half-Life\killcount\dlls\hl.dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(TargetDir)\hl.dll D:\Fileshare\Misc\HL2005\Half-Life\killcount\dlls
 
 # End Custom Build
 

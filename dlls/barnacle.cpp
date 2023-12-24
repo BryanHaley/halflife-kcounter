@@ -130,7 +130,7 @@ void CBarnacle :: Spawn()
 
 	UTIL_SetOrigin ( pev, pev->origin );
 
-	m_iKillCounterEligble = 1;
+	MAKE_KILL_COUNTER_ELIGBLE();
 }
 
 int CBarnacle::TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )

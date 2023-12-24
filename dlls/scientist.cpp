@@ -691,7 +691,7 @@ void CScientist :: Spawn( void )
 	SetUse( FollowerUse );
 
 	if (CVAR_GET_FLOAT( "kc_count_friendlies" ) != 0) {
-		m_iKillCounterEligble = 1; // Make eligble for kill counter
+		MAKE_KILL_COUNTER_ELIGBLE();
 	}
 }
 

@@ -325,7 +325,7 @@ void CNihilanth :: Spawn( void )
 	pev->health = 100;
 	*/
 
-	m_iKillCounterEligble = 1;
+	MAKE_KILL_COUNTER_ELIGBLE();
 }
 
 

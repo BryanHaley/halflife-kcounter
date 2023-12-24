@@ -510,7 +510,7 @@ void CIchthyosaur :: Spawn()
 	pev->velocity = m_flightSpeed * Forward.Normalize();
 	m_SaveVelocity = pev->velocity;
 
-	m_iKillCounterEligble = 1; // Make eligble for kill counter
+	MAKE_KILL_COUNTER_ELIGBLE();
 }
 
 //=========================================================

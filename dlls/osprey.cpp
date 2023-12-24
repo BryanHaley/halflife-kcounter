@@ -180,7 +180,7 @@ void COsprey :: Spawn( void )
 	m_ang2 = pev->angles;
 	m_vel2 = pev->velocity;
 
-	m_iKillCounterEligble = 1;
+	MAKE_KILL_COUNTER_ELIGBLE();
 }
 
 

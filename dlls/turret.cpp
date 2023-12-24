@@ -272,7 +272,7 @@ void CBaseTurret::Spawn()
 	m_flFieldOfView = VIEW_FIELD_FULL;
 	// m_flSightRange = TURRET_RANGE;
 
-	m_iKillCounterEligble = 1;
+	MAKE_KILL_COUNTER_ELIGBLE();
 }
 
 

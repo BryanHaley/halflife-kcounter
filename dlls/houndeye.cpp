@@ -347,7 +347,7 @@ void CHoundeye :: Spawn()
 
 	MonsterInit();
 
-	m_iKillCounterEligble = 1; // Make eligble for kill counter
+	MAKE_KILL_COUNTER_ELIGBLE();
 }
 
 //=========================================================

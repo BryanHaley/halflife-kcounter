@@ -150,7 +150,7 @@ void CApache :: Spawn( void )
 	}
 
 	m_iRockets = 10;
-	m_iKillCounterEligble = 1;
+	MAKE_KILL_COUNTER_ELIGBLE();
 }
 
 

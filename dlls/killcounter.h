@@ -46,3 +46,11 @@ if (m_iKillCounterEligble && !( pev->spawnflags & SF_IGNORE_KILL )) { \
 	CLIENT_COMMAND ( pPlayer->edict(), report); \
 	m_iKillCounterEligble = 0; \
 }
+
+#define MAKE_KILL_COUNTER_ELIGBLE() \
+if (!(pev->spawnflags & SF_MAX_ONLY) || (CVAR_GET_FLOAT( "kc_max_percent" ) != 0)) { \
+	m_iKillCounterEligble = 1; \
+} else if ((CVAR_GET_FLOAT( "kc_ghosts" ) != 0)) { \
+	pev->rendermode = kRenderTransAdd; \
+	pev->renderamt = 128; \
+}

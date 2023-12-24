@@ -347,6 +347,7 @@ int CHudHealth::Init(void)
 	CVAR_CREATE( "kc_show_kill_table", "1", FCVAR_ARCHIVE );
 	CVAR_CREATE( "kc_show_all_chapters", "1", FCVAR_ARCHIVE );
 	CVAR_CREATE( "kc_show_current_map", "0", FCVAR_ARCHIVE );
+	CVAR_CREATE( "kc_max_percent", "1", FCVAR_ARCHIVE ); // Eliminates a few particularly annoying/unintended kills from the run
 	CVAR_CREATE( "kc_kill_table_x", "20", FCVAR_ARCHIVE );
 	CVAR_CREATE( "kc_kill_table_y", "220", FCVAR_ARCHIVE );
 	CVAR_CREATE( "kc_map_x", "20", FCVAR_ARCHIVE );

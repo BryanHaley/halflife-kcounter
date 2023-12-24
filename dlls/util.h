@@ -435,6 +435,7 @@ extern DLL_GLOBAL int			g_Language;
 // kill counter
 #define SF_KILL_ELIGBLE 		8    // Counts as a kill on the kill counter. Used by func_breakables
 #define SF_IGNORE_KILL  		1024 // Ignores kill, even if eligble.
+#define SF_MAX_ONLY		  		2048 // Only counts if kc_max_percent is 1
 
 
 // func_pushable (it's also func_breakable, so don't collide with those flags)

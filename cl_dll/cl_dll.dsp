@@ -59,8 +59,8 @@ TargetDir=.\Release
 InputPath=.\Release\client.dll
 SOURCE="$(InputPath)"
 
-"Z:\Fileshare\Misc\HL2005\Half-Life\killcount\cl_dlls\client.dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	copy $(TargetDir)\client.dll Z:\Fileshare\Misc\HL2005\Half-Life\killcount\cl_dlls
+"D:\Fileshare\Misc\HL2005\Half-Life\killcount\cl_dlls\client.dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(TargetDir)\client.dll D:\Fileshare\Misc\HL2005\Half-Life\killcount\cl_dlls
 
 # End Custom Build
 

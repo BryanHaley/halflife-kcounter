@@ -232,7 +232,7 @@ void CMonsterMaker::MakeMonster( void )
 	m_cNumMonsters--;
 
 	// If this monster maker has made more than one monster, its children won't be counted towards the kill counter
-	if (m_iTotalChildren > 1) {
+	if (m_iTotalChildren > 1 || ((pev->spawnflags & SF_MAX_ONLY) && (CVAR_GET_FLOAT( "kc_max_percent" ) == 0))) {
 		if ((CVAR_GET_FLOAT( "kc_ghosts" ) != 0)) {
 			pevCreate->rendermode = kRenderTransAdd;
 			pevCreate->renderamt = 128;
