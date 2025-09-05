@@ -293,10 +293,10 @@ void CBaseDelay :: SUB_UseTargets( CBaseEntity *pActivator, USE_TYPE useType, fl
 				EMIT_SOUND( pPlayer->edict(), CHAN_AUTO, "kc/hitmarker.wav", 1.0f, ATTN_NONE );
 			}
 			char num_kills[16];
-			itoa(KillCounter.GetKills(), num_kills, 10);
 			char report[128];
 
 			KillCounter.IncrementKills(STRING(gpGlobals->mapname));
+			itoa(KillCounter.GetKills(), num_kills, 10);
 			report[0] = '\0';
 			strcat(report, "report_to_demo monster_tentacle 'tent1' killedon c1a4i total ");
 			strcat(report, num_kills);
@@ -305,6 +305,7 @@ void CBaseDelay :: SUB_UseTargets( CBaseEntity *pActivator, USE_TYPE useType, fl
 			CLIENT_COMMAND ( pPlayer->edict(), report);
 			
 			KillCounter.IncrementKills(STRING(gpGlobals->mapname));
+			itoa(KillCounter.GetKills(), num_kills, 10);
 			report[0] = '\0';
 			strcat(report, "report_to_demo monster_tentacle 'tent2' killedon c1a4i total ");
 			strcat(report, num_kills);
@@ -313,6 +314,7 @@ void CBaseDelay :: SUB_UseTargets( CBaseEntity *pActivator, USE_TYPE useType, fl
 			CLIENT_COMMAND ( pPlayer->edict(), report);
 
 			KillCounter.IncrementKills(STRING(gpGlobals->mapname));
+			itoa(KillCounter.GetKills(), num_kills, 10);
 			report[0] = '\0';
 			strcat(report, "report_to_demo monster_tentacle 'tent3' killedon c1a4i total ");
 			strcat(report, num_kills);
