@@ -22,6 +22,9 @@ extern "C"
 
 #include "vgui_TeamFortressViewport.h"
 
+
+extern int g_iAlive;
+
 extern "C" 
 {
 	struct kbutton_s DLLEXPORT *KB_Find( const char *name );
@@ -686,7 +689,7 @@ void DLLEXPORT CL_CreateMove ( float frametime, struct usercmd_s *cmd, int activ
 	gEngfuncs.GetViewAngles( (float *)viewangles );
 	// Set current view angles.
 
-	if ( gHUD.m_Health.m_iHealth > 0 )
+	if ( g_iAlive )
 	{
 		VectorCopy( viewangles, cmd->viewangles );
 		VectorCopy( viewangles, oldangles );
