@@ -18,6 +18,8 @@ void Game_AddObjects( void );
 
 extern vec3_t v_origin;
 
+int g_iAlive = 1;
+
 extern "C" 
 {
 	int DLLEXPORT HUD_AddEntity( int type, struct cl_entity_s *ent, const char *modelname );
@@ -162,6 +164,9 @@ void DLLEXPORT HUD_TxferPredictionData ( struct entity_state_s *ps, const struct
 	pcd->maxspeed				= ppcd->maxspeed;
 
 	pcd->deadflag				= ppcd->deadflag;
+
+	// Spectating or not dead == get control over view angles.
+	g_iAlive = ( ppcd->iuser1 || ( pcd->deadflag == DEAD_NO ) ) ? 1 : 0;
 
 	// Spectator
 	pcd->iuser1					= ppcd->iuser1;
