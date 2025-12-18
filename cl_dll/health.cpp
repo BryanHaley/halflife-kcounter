@@ -352,6 +352,7 @@ int CHudHealth::Init(void)
 	CVAR_CREATE( "kc_kill_table_y", "220", FCVAR_ARCHIVE );
 	CVAR_CREATE( "kc_map_x", "20", FCVAR_ARCHIVE );
 	CVAR_CREATE( "kc_map_y", "200", FCVAR_ARCHIVE );
+	CVAR_CREATE( "kc_debug_monster_path_search", NULL, 0);
 
 	HOOK_COMMAND("report_to_demo", ReportToDemo);
 

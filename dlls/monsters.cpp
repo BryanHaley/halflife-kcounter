@@ -2292,6 +2292,11 @@ BOOL CBaseMonster :: FindCover ( Vector vecThreat, Vector vecViewOffset, float f
 
 	vecLookersOffset = vecThreat + vecViewOffset;// calculate location of enemy's eyes
 
+	if (CVAR_GET_FLOAT("kc_debug_monster_path_search") > 0)
+	{
+		vec3_t o = this->pev->origin;
+		ALERT( at_console, "%s (x:% 4.0f y:% 4.0f z:% 4.0f) Finding Cover - Start: %d", STRING(this->pev->classname), o.x,o.y,o.z, WorldGraph.m_iLastCoverSearch);
+	}
 	// we'll do a rough sample to find nodes that are relatively nearby
 	for ( i = 0 ; i < WorldGraph.m_cNodes ; i++ )
 	{
@@ -2331,12 +2336,20 @@ BOOL CBaseMonster :: FindCover ( Vector vecThreat, Vector vecViewOffset, float f
 						MESSAGE_END();
 						*/
 
+                        if (CVAR_GET_FLOAT("kc_debug_monster_path_search") > 0)
+                        {
+                            ALERT( at_console, " - End: %d\n", WorldGraph.m_iLastCoverSearch);
+                        }
 						return TRUE;
 					}
 				}
 			}
 		}
 	}
+	if (CVAR_GET_FLOAT("kc_debug_monster_path_search") > 0)
+    {
+        ALERT( at_console, " - End: %d (Failed to find path)\n", WorldGraph.m_iLastCoverSearch);
+    }
 	return FALSE;
 }
 
@@ -2389,7 +2402,13 @@ BOOL CBaseMonster :: BuildNearestRoute ( Vector vecThreat, Vector vecViewOffset,
 	}
 
 	vecLookersOffset = vecThreat + vecViewOffset;// calculate location of enemy's eyes
+	
 
+	if (CVAR_GET_FLOAT("kc_debug_monster_path_search") > 0)
+	{
+		vec3_t o = this->pev->origin;
+		ALERT( at_console, "%s (x:% 4.0f y:% 4.0f z:% 4.0f) Building Route - Start: %d",  STRING(this->pev->classname), o.x,o.y,o.z, WorldGraph.m_iLastCoverSearch);
+	}
 	// we'll do a rough sample to find nodes that are relatively nearby
 	for ( i = 0 ; i < WorldGraph.m_cNodes ; i++ )
 	{
@@ -2416,11 +2435,20 @@ BOOL CBaseMonster :: BuildNearestRoute ( Vector vecThreat, Vector vecViewOffset,
 					{
 						flMaxDist = flDist;
 						m_vecMoveGoal = node.m_vecOrigin;
+						if (CVAR_GET_FLOAT("kc_debug_monster_path_search") > 0)
+						{
+							ALERT( at_console, " - End: %d\n", WorldGraph.m_iLastCoverSearch);
+						}
 						return TRUE; // UNDONE: keep looking for something closer!
 					}
 				}
 			}
 		}
+	}
+	
+	if (CVAR_GET_FLOAT("kc_debug_monster_path_search") > 0)
+	{
+		ALERT( at_console, " - End: %d (Failed to find path)\n", WorldGraph.m_iLastCoverSearch);
 	}
 
 	return FALSE;
