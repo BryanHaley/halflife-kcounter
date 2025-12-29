@@ -44,6 +44,7 @@ cvar_t	defaultteam = {"mp_defaultteam","0" };
 cvar_t	allowmonsters={"mp_allowmonsters","0", FCVAR_SERVER };
 
 cvar_t	debugpath = {"kc_debug_monster_path_search", "0", FCVAR_SERVER };
+cvar_t	debugnihiattack = {"kc_debug_nihilanth_attacks", "0", FCVAR_SERVER };
 
 cvar_t 	*g_psv_gravity = NULL;
 cvar_t	*g_psv_aim = NULL;
@@ -485,6 +486,7 @@ void GameDLLInit( void )
 	CVAR_REGISTER (&allowmonsters);
 
 	CVAR_REGISTER (&debugpath);
+	CVAR_REGISTER (&debugnihiattack);
 
 // REGISTER CVARS FOR SKILL LEVEL STUFF
 	// Agrunt

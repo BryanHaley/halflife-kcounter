@@ -812,22 +812,44 @@ void CNihilanth :: NextActivity( )
 		m_hEnemy = BestVisibleEnemy( );
 	}
 
+	int debugNihiAttack = CVAR_GET_FLOAT("kc_debug_nihilanth_attacks") > 0 && CVAR_GET_FLOAT( "sv_cheats" ) > 0;
+	CBaseEntity *pPlayer = NULL;
+	if (debugNihiAttack)
+	{
+		pPlayer = UTIL_FindEntityByClassname( NULL, "player" );
+	}
+
 	if (m_hEnemy != NULL && m_irritation != 0)
 	{
 		if (m_flLastSeen + 5 > gpGlobals->time && flDist < 256 && flDot > 0)
 		{
 			if (m_irritation >= 2 && pev->health < gSkillData.nihilanthHealth / 2.0)
 			{
+				ALERT( at_aiconsole, "KC: Nihilanth is irritated!\n" );
+				if (debugNihiAttack)
+				{
+					CLIENT_COMMAND ( pPlayer->edict(), "say \"KC: Nihilanth is irritated!\"\n");
+				}
 				pev->sequence = LookupSequence( "attack1_open" );
 			}
 			else 
 			{
 				if (RANDOM_LONG(0, 1 ) == 0)
 				{
+					ALERT( at_aiconsole, "KC: Nihilanth rolled zap!\n" );
+					if (debugNihiAttack)
+					{
+						CLIENT_COMMAND ( pPlayer->edict(), "say \"KC: Nihilanth rolled zap!\"\n");
+					}
 					pev->sequence = LookupSequence( "attack1" ); // zap
 				}
 				else
 				{
+					ALERT( at_aiconsole, "KC: Nihilanth rolled teleport!\n" );
+					if (debugNihiAttack)
+					{
+						CLIENT_COMMAND ( pPlayer->edict(), "say \"KC: Nihilanth rolled teleport!\"\n");
+					}
 					char szText[64];
 
 					sprintf( szText, "%s%d", m_szTeleportTouch, m_iTeleport );
@@ -848,6 +870,22 @@ void CNihilanth :: NextActivity( )
 				}
 			}
 			return;
+		}
+		else
+		{
+			ALERT( at_aiconsole, "KC: Nihilanth can't see you!\n" );
+			if (debugNihiAttack)
+			{
+				CLIENT_COMMAND ( pPlayer->edict(), "say \"KC: Nihilanth can't see you!\"\n");
+			}
+		}
+	}
+	else
+	{
+		ALERT( at_aiconsole, "KC: Nihilanth has no enemy lock!\n" );
+		if (debugNihiAttack)
+		{
+			CLIENT_COMMAND ( pPlayer->edict(), "say \"KC: Nihilanth has no enemy lock!\"\n");
 		}
 	}
 
