@@ -350,6 +350,9 @@ int CHudHealth::Init(void)
 	CVAR_CREATE( "kc_max_percent", "0", FCVAR_ARCHIVE ); // Eliminates a few particularly annoying/unintended kills from the run
 	CVAR_CREATE( "kc_kill_table_x", "20", FCVAR_ARCHIVE );
 	CVAR_CREATE( "kc_kill_table_y", "220", FCVAR_ARCHIVE );
+	CVAR_CREATE( "kc_show_crosshair_counter", "0", FCVAR_ARCHIVE );
+	CVAR_CREATE( "kc_crosshair_counter_offset_x", "0", FCVAR_ARCHIVE );
+	CVAR_CREATE( "kc_crosshair_counter_offset_y", "0", FCVAR_ARCHIVE );
 	CVAR_CREATE( "kc_map_x", "20", FCVAR_ARCHIVE );
 	CVAR_CREATE( "kc_map_y", "200", FCVAR_ARCHIVE );
 	CVAR_CREATE( "kc_debug_monster_path_search", "0", FCVAR_ARCHIVE);
@@ -572,11 +575,40 @@ int CHudHealth::Draw(float flTime)
 		bool draw_kill_table = CVAR_GET_FLOAT( "kc_show_kill_table" ) != 0;
 		bool show_all_chapters = CVAR_GET_FLOAT( "kc_show_all_chapters" ) != 0;
 		bool show_current_map = CVAR_GET_FLOAT( "kc_show_current_map" ) != 0;
+		bool draw_crosshair_counter = CVAR_GET_FLOAT( "kc_show_crosshair_counter" ) != 0;
 
 		char map_name [64];
 		memset(map_name, '\0', 64);
 		strncpy(map_name, gEngfuncs.pfnGetLevelName()+5, strlen(gEngfuncs.pfnGetLevelName()+5)-4);
 		const char *chapter = get_chapter_from_map_name(map_name);
+
+		if (draw_crosshair_counter)
+		{
+			int x_offset = (int) CVAR_GET_FLOAT( "kc_crosshair_counter_offset_x" );
+			int y_offset = (int) CVAR_GET_FLOAT( "kc_crosshair_counter_offset_y" );
+
+			if (map_kills_table[chapter] >= map_counts_table[chapter]) {
+				r = 0;
+				g = 255;
+				b = 0;
+				a = MIN_ALPHA;
+				ScaleColors(r, g, b, a );
+			}
+
+			char str_buff [20];
+			char num_buff [10];
+			memset(str_buff, '\0', 20);
+			memset(num_buff, '\0', 10);
+			itoa(map_counts_table[chapter], num_buff, 10);
+			strncat(str_buff, "/ ", 5);
+			strncat(str_buff, num_buff, 5);
+
+			// Draw crosshair kill counter
+			x = (ScreenWidth / 2) + x_offset;
+			y = (ScreenHeight / 2) + y_offset;
+			x = gHUD.DrawHudNumber(x, y, DHN_3DIGITS | DHN_DRAWZERO, map_kills_table[chapter], r, g, b);
+			gHUD.DrawHudString( x+5, y+5, ScreenWidth, str_buff, r, g, b );
+		}
 
 		if (show_current_map && strncmp(map_name, "c5a1", 64) != 0) {
 			x = (int) CVAR_GET_FLOAT( "kc_map_x" );
