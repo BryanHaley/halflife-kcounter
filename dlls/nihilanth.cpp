@@ -845,11 +845,6 @@ void CNihilanth :: NextActivity( )
 				}
 				else
 				{
-					ALERT( at_aiconsole, "KC: Nihilanth rolled teleport!\n" );
-					if (debugNihiAttack)
-					{
-						CLIENT_COMMAND ( pPlayer->edict(), "say \"KC: Nihilanth rolled teleport!\"\n");
-					}
 					char szText[64];
 
 					sprintf( szText, "%s%d", m_szTeleportTouch, m_iTeleport );
@@ -860,10 +855,21 @@ void CNihilanth :: NextActivity( )
 
 					if (pTrigger != NULL || pTouch != NULL)
 					{
+						ALERT( at_aiconsole, "KC: Nihilanth rolled teleport!\n" );
+						if (debugNihiAttack)
+						{
+							CLIENT_COMMAND ( pPlayer->edict(), "say \"KC: Nihilanth rolled teleport!\"\n");
+						}
 						pev->sequence = LookupSequence( "attack2" ); // teleport
 					}
 					else
 					{
+						ALERT( at_aiconsole, "KC: Nihilanth rolled teleport, but pTrigger or pTouch is null. Zap instead! (m_iTeleport incremented).\n" );
+						ALERT( at_aiconsole, "KC: (Zero is null) pTouch: %d, pTrigger: %d\n", pTouch, pTrigger );
+						if (debugNihiAttack)
+						{
+							CLIENT_COMMAND ( pPlayer->edict(), "say \"KC: Nihilanth rolled teleport, but pTrigger or pTouch is null. Zap instead! (m_iTeleport incremented).\"\n");
+						}
 						m_iTeleport++;
 						pev->sequence = LookupSequence( "attack1" ); // zap
 					}
@@ -1101,6 +1107,13 @@ void CNihilanth :: 	TargetSphere( USE_TYPE useType, float value )
 
 void CNihilanth :: HandleAnimEvent( MonsterEvent_t *pEvent )
 {
+	int debugNihiAttack = CVAR_GET_FLOAT("kc_debug_nihilanth_attacks") > 0 && CVAR_GET_FLOAT( "sv_cheats" ) > 0;
+	CBaseEntity *pPlayer = NULL;
+	if (debugNihiAttack)
+	{
+		pPlayer = UTIL_FindEntityByClassname( NULL, "player" );
+	}
+
 	switch( pEvent->event )
 	{
 	case 1:	// shoot 
@@ -1168,6 +1181,11 @@ void CNihilanth :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			}
 			else
 			{
+				ALERT( at_aiconsole, "KC: Nihilanth incremented m_iTeleport on prayer animation event!\n" );
+				if (debugNihiAttack)
+				{
+					CLIENT_COMMAND ( pPlayer->edict(), "say \"KC: Nihilanth incremented m_iTeleport on prayer animation event!\"\n");
+				}
 				m_iTeleport++; // unexpected failure
 
 				EMIT_SOUND( edict(), CHAN_WEAPON, RANDOM_SOUND_ARRAY( pBallSounds ), 1.0, 0.2 ); 
